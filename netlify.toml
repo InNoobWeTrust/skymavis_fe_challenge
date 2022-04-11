@@ -1,0 +1,7 @@
+[build]
+  publish = "dist/skymavis_fe_challenge"
+  command = "ng build --prod"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

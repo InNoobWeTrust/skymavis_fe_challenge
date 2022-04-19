@@ -4,14 +4,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 const EXCHANGE_API = 'https://api.coingecko.com/api/v3/exchange_rates';
 
-interface Exchange {
+export interface Exchange {
   name: string;
   unit: string;
   value: number;
   type: string;
 }
 
-interface ExchangeRates {
+export interface ExchangeRates {
   rates: Record<string, Exchange>;
 }
 

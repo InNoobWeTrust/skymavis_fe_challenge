@@ -103,9 +103,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "skymavis_fe_challenge"
+  "defaultProject": "skymavis_fe_challenge",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

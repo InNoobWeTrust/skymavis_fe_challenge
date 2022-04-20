@@ -16,13 +16,13 @@ const COINS_API_ROUTES = {
     ].join('&'),
 };
 
-export interface Coin {
+export interface ICoin {
   id: string;
   symbol: string;
   name: string;
 }
 
-export interface CoinMarket {
+export interface ICoinMarket {
   id: string;
   symbol: string;
   name: string;
@@ -59,13 +59,13 @@ export interface CoinMarket {
   providedIn: 'root',
 })
 export class CoinsService {
-  private _coinsSubject$: BehaviorSubject<Readonly<Coin[]>> =
-    new BehaviorSubject<Readonly<Coin[]>>([]);
-  private _coinMarketSubject$: BehaviorSubject<Readonly<CoinMarket[]>> =
-    new BehaviorSubject<Readonly<CoinMarket[]>>([]);
-  readonly coins$: Observable<Readonly<Coin[]>> =
+  private _coinsSubject$: BehaviorSubject<Readonly<ICoin[]>> =
+    new BehaviorSubject<Readonly<ICoin[]>>([]);
+  private _coinMarketSubject$: BehaviorSubject<Readonly<ICoinMarket[]>> =
+    new BehaviorSubject<Readonly<ICoinMarket[]>>([]);
+  readonly coins$: Observable<Readonly<ICoin[]>> =
     this._coinsSubject$.asObservable();
-  readonly market$: Observable<Readonly<CoinMarket[]>> =
+  readonly market$: Observable<Readonly<ICoinMarket[]>> =
     this._coinMarketSubject$.asObservable();
 
   constructor(private _http: HttpClient) {
@@ -74,16 +74,16 @@ export class CoinsService {
 
   refreshList() {
     this._http
-      .get<Readonly<Coin[]>>(`${COINS_API}${COINS_API_ROUTES.list()}`)
-      .subscribe((coins: Readonly<Coin[]>) => this._coinsSubject$.next(coins));
+      .get<Readonly<ICoin[]>>(`${COINS_API}${COINS_API_ROUTES.list()}`)
+      .subscribe((coins: Readonly<ICoin[]>) => this._coinsSubject$.next(coins));
   }
 
   retriveMarketInfo(currency?: string) {
     this._http
-      .get<Readonly<CoinMarket[]>>(
+      .get<Readonly<ICoinMarket[]>>(
         `${COINS_API}${COINS_API_ROUTES.markets({ currency })}`
       )
-      .subscribe((markets: Readonly<CoinMarket[]>) =>
+      .subscribe((markets: Readonly<ICoinMarket[]>) =>
         this._coinMarketSubject$.next(markets)
       );
   }

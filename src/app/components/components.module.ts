@@ -14,6 +14,7 @@ import { MatList, MatListItem, MatListModule } from '@angular/material/list';
 
 import { CryptoCardComponent } from './crypto-card/crypto-card.component';
 import { HomeComponent } from './home/home.component';
+import { CryptoListComponent } from './crypto-list/crypto-list.component';
 
 const MATERIAL_MODULES = [
   MatCardModule,
@@ -28,7 +29,7 @@ const UNITS = [CryptoCardComponent];
 const FULL = [HomeComponent];
 
 @NgModule({
-  declarations: [...UNITS, ...FULL],
+  declarations: [...UNITS, ...FULL, CryptoListComponent],
   imports: [CommonModule, ...MATERIAL_MODULES],
 })
 export class ComponentsModule {}

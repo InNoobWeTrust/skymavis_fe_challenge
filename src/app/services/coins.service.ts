@@ -69,7 +69,7 @@ export class CoinsService {
     this._coinMarketSubject$.asObservable();
 
   constructor(private _http: HttpClient) {
-    this.refreshList();
+    this.refreshList(); // caching coins list
   }
 
   refreshList() {

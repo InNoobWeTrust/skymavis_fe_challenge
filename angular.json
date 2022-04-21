@@ -31,6 +31,8 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/placeholder-loading/dist/css/placeholder-loading.min.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -99,13 +101,26 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
     }
   },
-  "defaultProject": "skymavis_fe_challenge"
+  "defaultProject": "skymavis_fe_challenge",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

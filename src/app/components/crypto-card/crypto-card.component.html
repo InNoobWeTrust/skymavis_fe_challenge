@@ -4,13 +4,13 @@
       [style.background-image]="'url(' + market!.image + ')'"
       class="icon"
     ></div>
-    <div class="symbol">{{ market!.symbol.toUpperCase() }}</div>
+    <div class="symbol">{{ market.symbol.toUpperCase() }}</div>
     <div class="change-24h" [class.up-trend]="isUpTrend">
-      {{ market!.price_change_24h.toFixed(2) }}
+      {{ market.price_change_24h.toFixed(2) }}
     </div>
     <div class="range">
-      <p class="up">{{ market!.high_24h.toFixed(2) }}</p>
-      <p class="down">{{ market!.low_24h.toFixed(2) }}</p>
+      <p class="high">{{ market.high_24h.toFixed(2) }}</p>
+      <p class="low">{{ market.low_24h.toFixed(2) }}</p>
     </div>
   </mat-card-content>
 </mat-card>

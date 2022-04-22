@@ -8,10 +8,6 @@ import { ICoinMarket } from 'src/app/services/coins.service';
 })
 export class CryptoCardComponent {
   @Input()
-  symbol: string = '';
-  @Input()
-  marketLoaded: boolean = false;
-  @Input()
   market: ICoinMarket = {
     id: '',
     symbol: 'btc',

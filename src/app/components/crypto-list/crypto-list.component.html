@@ -1,0 +1,23 @@
+<ng-container *ngIf="loaded; else placeholder">
+  <ng-container *ngFor="let market of marketData">
+    <app-crypto-card [market]="market"></app-crypto-card>
+  </ng-container>
+</ng-container>
+<ng-template #placeholder>
+  <ng-container *ngFor="let _ of [1, 2, 3, 4, 5]">
+    <div class="col-12 col-sm-6">
+      <div class="ph-item" style="margin-bottom: unset">
+        <div class="ph-col-2">
+          <div class="ph-avatar"></div>
+        </div>
+        <div>
+          <div class="ph-row">
+            <div class="ph-col-12 big"></div>
+            <div class="ph-col-12 big"></div>
+            <div class="ph-col-12 big"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>

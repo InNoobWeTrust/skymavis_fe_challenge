@@ -23,7 +23,7 @@ export class FavoriteStoreService {
     // Auto update backing localStorage data
     this._subscriptions.push(
       this.favoriteStore$.subscribe((favorites: Readonly<Set<string>>) =>
-        localStorage.setItem(FAVORITE_STORE_KEY, JSON.stringify(favorites))
+        localStorage.setItem(FAVORITE_STORE_KEY, JSON.stringify([...favorites]))
       )
     );
   }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoinsService, ICoinMarket } from 'src/app/services/coins.service';
+import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
 
 @Component({
   selector: 'app-crypto-list',
@@ -9,6 +10,7 @@ import { CoinsService, ICoinMarket } from 'src/app/services/coins.service';
 export class CryptoListComponent implements OnInit {
   private _cachedMarket: Readonly<ICoinMarket[]> = [];
   private _filteredMarket: Readonly<ICoinMarket[]> = [];
+  private _favorites: Readonly<Set<string>> = new Set();
   private _searchTerm: string = '';
   private _loaded = false;
 
@@ -25,6 +27,18 @@ export class CryptoListComponent implements OnInit {
     return this._filteredMarket;
   }
 
+  constructor(
+    private _favoriteStoreService: FavoriteStoreService,
+    coinsService: CoinsService,
+  ) {
+    coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
+      this._cachedMarket = data;
+      if (!this._loaded) this._loaded = true;
+      this.update();
+    });
+    _favoriteStoreService.favoriteStore$.subscribe((favorites: Readonly<Set<string>>) => (this._favorites = favorites));
+  }
+
   private update() {
     if (this._searchTerm.length > 0) {
       this._filteredMarket = this._cachedMarket.filter((market: ICoinMarket) =>
@@ -35,13 +49,16 @@ export class CryptoListComponent implements OnInit {
     }
   }
 
-  constructor(coinsService: CoinsService) {
-    coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
-      this._cachedMarket = data;
-      if (!this._loaded) this._loaded = true;
-      this.update();
-    });
-    coinsService.getMarket();
+  isFavorite(market: ICoinMarket) {
+    return this._favorites.has(market.id);
+  }
+
+  toggleFavorite(market: ICoinMarket) {
+    this._favoriteStoreService.toggleFavorite(market.id);
+  }
+
+  marketTrackBy(_idx: number, market: ICoinMarket) {
+    return market.id;
   }
 
   ngOnInit(): void {}

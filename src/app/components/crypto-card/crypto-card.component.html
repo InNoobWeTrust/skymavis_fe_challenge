@@ -1,5 +1,8 @@
 <mat-card>
   <mat-card-content class="container">
+    <div class="star" (click)="toggleFavorite()">
+      <span [class.favorited]="favorited" [innerHtml]="favorited ? '&#9733;' :  '&#9734;'"></span>
+    </div>
     <div
       [style.background-image]="'url(' + market!.image + ')'"
       class="icon"

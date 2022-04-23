@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ICoinMarket } from 'src/app/services/coins.service';
 
 @Component({
@@ -32,8 +32,17 @@ export class CryptoCardComponent {
     atl_date: '',
     last_updated: '',
   };
+  @Input()
+  favorited: boolean = false;
+
+  @Output()
+  toggle: EventEmitter<void> = new EventEmitter<void>();
 
   get isUpTrend(): boolean {
     return this.market!.price_change_24h > 0;
+  }
+
+  toggleFavorite() {
+    this.toggle.emit();
   }
 }

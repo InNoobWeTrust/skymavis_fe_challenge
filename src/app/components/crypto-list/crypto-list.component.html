@@ -1,6 +1,10 @@
 <ng-container *ngIf="loaded; else placeholder">
-  <ng-container *ngFor="let market of marketData">
-    <app-crypto-card [market]="market"></app-crypto-card>
+  <ng-container *ngFor="let market of marketData; trackBy: marketTrackBy">
+    <app-crypto-card
+      [market]="market"
+      [favorited]="isFavorite(market)"
+      (toggle)="toggleFavorite(market)"
+      ></app-crypto-card>
   </ng-container>
 </ng-container>
 <ng-template #placeholder>

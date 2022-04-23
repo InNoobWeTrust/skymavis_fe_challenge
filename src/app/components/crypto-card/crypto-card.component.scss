@@ -6,13 +6,25 @@ mat-card {
     gap: 1rem;
     text-align: center;
 
+    .star {
+      top: 0;
+      left: 0;
+      margin-left: -0.2em;
+      margin-top: -0.2em;
+      position: absolute;
+      font-size: xx-large;
+
+      span.favorited {
+        color: gold;
+      }
+    }
+
     .icon {
-      height: 4rem;
-      min-width: 4rem;
+      height: 10vw;
+      min-width: 10vw;
       align-self: center;
       background-size: cover;
       background-position: center;
-      border-radius: 50%;
     }
 
     .symbol {

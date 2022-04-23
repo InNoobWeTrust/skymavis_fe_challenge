@@ -1,0 +1,14 @@
+<mat-form-field class="search-field" appearance="fill">
+  <input
+    matInput
+    type="search"
+    [(ngModel)]="searchTerm"
+    placeholder="Search for some coin/token"
+    pattern="[A-z0-9\S]*"
+  />
+  <button matSuffix mat-icon-button (click)="searchTerm = ''">
+    <mat-icon [class.wait-input]="!searchTerm">{{
+      searchTerm ? "close" : "search"
+    }}</mat-icon>
+  </button>
+</mat-form-field>

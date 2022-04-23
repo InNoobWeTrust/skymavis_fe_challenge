@@ -11,10 +11,16 @@ import {
   MatProgressBarModule,
 } from '@angular/material/progress-bar';
 import { MatList, MatListItem, MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CryptoCardComponent } from './crypto-card/crypto-card.component';
 import { HomeComponent } from './home/home.component';
 import { CryptoListComponent } from './crypto-list/crypto-list.component';
+import { SearchComponent } from './search/search.component';
+import { FormsModule } from '@angular/forms';
+
+const ANGULAR_MODULES = [FormsModule];
 
 const MATERIAL_MODULES = [
   MatCardModule,
@@ -22,14 +28,16 @@ const MATERIAL_MODULES = [
   MatProgressSpinnerModule,
   MatProgressBarModule,
   MatListModule,
+  MatInputModule,
+  MatIconModule,
 ];
 
-const UNITS = [CryptoCardComponent];
+const UNITS = [CryptoCardComponent, CryptoListComponent, SearchComponent];
 
 const FULL = [HomeComponent];
 
 @NgModule({
-  declarations: [...UNITS, ...FULL, CryptoListComponent],
-  imports: [CommonModule, ...MATERIAL_MODULES],
+  declarations: [...UNITS, ...FULL],
+  imports: [CommonModule, ...ANGULAR_MODULES, ...MATERIAL_MODULES],
 })
 export class ComponentsModule {}

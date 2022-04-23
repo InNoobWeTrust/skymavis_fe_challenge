@@ -29,14 +29,16 @@ export class CryptoListComponent implements OnInit {
 
   constructor(
     private _favoriteStoreService: FavoriteStoreService,
-    coinsService: CoinsService,
+    coinsService: CoinsService
   ) {
     coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
       this._cachedMarket = data;
       if (!this._loaded) this._loaded = true;
       this.update();
     });
-    _favoriteStoreService.favoriteStore$.subscribe((favorites: Readonly<Set<string>>) => (this._favorites = favorites));
+    _favoriteStoreService.favoriteStore$.subscribe(
+      (favorites: Readonly<Set<string>>) => (this._favorites = favorites)
+    );
   }
 
   private update() {

@@ -7,6 +7,8 @@ import { CryptoCardComponent } from '../crypto-card/crypto-card.component';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  searchTerm: string = '';
+
   constructor() {}
 
   ngOnInit(): void {}

@@ -1,1 +1,2 @@
-<app-crypto-list></app-crypto-list>
+<app-search (search)="searchTerm = $event"></app-search>
+<app-crypto-list [searchTerm]="searchTerm"></app-crypto-list>

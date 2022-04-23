@@ -1,20 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  interval,
+  Observable,
+  Subscription,
+  take,
+} from 'rxjs';
 
 const COINS_API = 'https://api.coingecko.com/api/v3/coins/';
 const COINS_API_ROUTES = {
   list: () => 'list',
-  markets: ({ currency = 'usd' }) =>
+  markets: ({ currency = 'usd', ids = [] }: MarketQueryOptions) =>
     [
       `markets?`,
       `vs_currency=${currency}`,
+      `ids=${ids.join('%2C')}`,
       `order=market_cap_desc`,
-      `per_page=100`,
+      `per_page=${ids.length || '100'}`,
       `page=1`,
       `sparkline=false`,
     ].join('&'),
 };
+
+export interface MarketQueryOptions {
+  currency?: string;
+  ids?: string[];
+}
 
 export interface ICoin {
   id: string;
@@ -63,28 +75,46 @@ export class CoinsService {
     new BehaviorSubject<Readonly<ICoin[]>>([]);
   private _coinMarketSubject$: BehaviorSubject<Readonly<ICoinMarket[]>> =
     new BehaviorSubject<Readonly<ICoinMarket[]>>([]);
+  private _subscriptions: Subscription[] = [];
+  private _marketRefreshSubscription?: Subscription;
+
   readonly coins$: Observable<Readonly<ICoin[]>> =
     this._coinsSubject$.asObservable();
   readonly market$: Observable<Readonly<ICoinMarket[]>> =
     this._coinMarketSubject$.asObservable();
 
   constructor(private _http: HttpClient) {
-    this.refreshList(); // caching coins list
+    this.refreshList(); // Caching coins list
+    this.getMarket(); // Caching market data
+    this._marketRefreshSubscription = this.market$
+      .pipe(take(1))
+      .subscribe(() => {
+        this._marketRefreshSubscription = interval(15000).subscribe(() =>
+          this.getMarket()
+        );
+      }); // Periodic refresh of market data
   }
 
-  refreshList() {
-    this._http
+  refreshList(): Subscription {
+    return this._http
       .get<Readonly<ICoin[]>>(`${COINS_API}${COINS_API_ROUTES.list()}`)
       .subscribe((coins: Readonly<ICoin[]>) => this._coinsSubject$.next(coins));
   }
 
-  retriveMarketInfo(currency?: string) {
-    this._http
+  getMarket(
+    options: MarketQueryOptions = {},
+    callback?: (market: Readonly<ICoinMarket[]>) => void
+  ): Subscription {
+    return this._http
       .get<Readonly<ICoinMarket[]>>(
-        `${COINS_API}${COINS_API_ROUTES.markets({ currency })}`
+        `${COINS_API}${COINS_API_ROUTES.markets(options)}`
       )
-      .subscribe((markets: Readonly<ICoinMarket[]>) =>
-        this._coinMarketSubject$.next(markets)
-      );
+      .subscribe((markets: Readonly<ICoinMarket[]>) => {
+        if (callback) {
+          callback(markets);
+        } else {
+          this._coinMarketSubject$.next(markets);
+        }
+      });
   }
 }

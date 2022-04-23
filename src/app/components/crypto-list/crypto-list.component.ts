@@ -41,7 +41,7 @@ export class CryptoListComponent implements OnInit {
       if (!this._loaded) this._loaded = true;
       this.update();
     });
-    coinsService.retriveMarketInfo();
+    coinsService.getMarket();
   }
 
   ngOnInit(): void {}

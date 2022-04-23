@@ -28,12 +28,12 @@ export class FavoriteStoreService {
     );
   }
 
-  toggleFavorite(symbol: string) {
+  toggleFavorite(id: string) {
     const current = new Set(this._store$.getValue());
-    if (current.has(symbol)) {
-      current.delete(symbol);
+    if (current.has(id)) {
+      current.delete(id);
     } else {
-      current.add(symbol);
+      current.add(id);
     }
     this._store$.next(current);
   }

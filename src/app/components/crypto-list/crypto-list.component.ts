@@ -23,7 +23,19 @@ export class CryptoListComponent implements OnDestroy {
 
   @Input()
   set searchTerm(value: string) {
-    this._searchTerm = value.trim();
+    const toBeUpdated = value.trim();
+    if (this._searchTerm !== toBeUpdated) {
+      this._searchTerm = toBeUpdated;
+      const wholeMarketMatch = this._cachedCoinList.filter((coin: ICoin) =>
+        coin.symbol.includes(this._searchTerm)
+      );
+      if (this._searchSubscription) this._searchSubscription.unsubscribe();
+      // Background network search
+      this._searchSubscription = this._coinsService.getMarket({
+        ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
+      });
+    }
+    // Cached search
     this.update();
   }
 
@@ -45,6 +57,10 @@ export class CryptoListComponent implements OnDestroy {
     _coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
       this._cachedMarket = data;
       if (!this._loaded) this._loaded = true;
+      if (this._searchSubscription) {
+        this._searchSubscription.unsubscribe();
+        delete this._searchSubscription;
+      }
       this.update();
     });
     _coinsService.coins$.subscribe(
@@ -56,19 +72,11 @@ export class CryptoListComponent implements OnDestroy {
   }
 
   private update() {
-    if (this._searchTerm.length > 0) {
+    if (this._searchTerm) {
       // Preload from cache
       this._filteredMarket = this._cachedMarket.filter((market: ICoinMarket) =>
         market.symbol.includes(this._searchTerm)
       );
-      const wholeMarketMatch = this._cachedCoinList.filter((coin: ICoin) =>
-        coin.symbol.includes(this._searchTerm)
-      );
-      if (this._searchSubscription) this._searchSubscription.unsubscribe();
-      // Background network search
-      this._searchSubscription = this._coinsService.getMarket({
-        ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
-      });
     } else {
       this._filteredMarket = this._cachedMarket;
     }

@@ -18,7 +18,9 @@ export class SearchComponent implements OnDestroy {
     return this._searchSubject$.getValue();
   }
   set searchTerm(value: string) {
-    this._searchSubject$.next(value);
+    if (this._searchSubject$.getValue() !== value) {
+      this._searchSubject$.next(value);
+    }
   }
 
   constructor() {

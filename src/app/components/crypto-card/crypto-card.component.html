@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="!!market">
   <mat-card-content class="container">
     <div class="star" (click)="toggleFavorite()">
       <span
@@ -12,11 +12,11 @@
     ></div>
     <div class="symbol">{{ market.symbol.toUpperCase() }}</div>
     <div class="change-24h" [class.up-trend]="isUpTrend">
-      {{ market.price_change_24h.toFixed(2) }}
+      {{ market.price_change_24h?.toFixed(2) || "N/A" }}
     </div>
     <div class="range">
-      <p class="high">{{ market.high_24h.toFixed(2) }}</p>
-      <p class="low">{{ market.low_24h.toFixed(2) }}</p>
+      <p class="high">{{ market.high_24h?.toFixed(2) || "N/A" }}</p>
+      <p class="low">{{ market.low_24h?.toFixed(2) || "N/A" }}</p>
     </div>
   </mat-card-content>
 </mat-card>

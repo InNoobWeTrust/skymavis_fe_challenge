@@ -1,5 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CoinsService, ICoinMarket } from 'src/app/services/coins.service';
+import { Component, Input, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import {
+  CoinsService,
+  ICoin,
+  ICoinMarket,
+} from 'src/app/services/coins.service';
 import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
 
 @Component({
@@ -7,16 +12,32 @@ import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
   templateUrl: './crypto-list.component.html',
   styleUrls: ['./crypto-list.component.scss'],
 })
-export class CryptoListComponent implements OnInit {
+export class CryptoListComponent implements OnDestroy {
+  private _cachedCoinList: Readonly<ICoin[]> = [];
   private _cachedMarket: Readonly<ICoinMarket[]> = [];
   private _filteredMarket: Readonly<ICoinMarket[]> = [];
   private _favorites: Readonly<Set<string>> = new Set();
   private _searchTerm: string = '';
   private _loaded = false;
+  private _searchSubscription?: Subscription;
 
   @Input()
   set searchTerm(value: string) {
-    this._searchTerm = value.trim();
+    const toBeUpdated = value.trim();
+    if (this._searchTerm !== toBeUpdated) {
+      this._searchTerm = toBeUpdated;
+    }
+    if (this._searchTerm) {
+      const wholeMarketMatch = this._cachedCoinList.filter((coin: ICoin) =>
+        coin.symbol.includes(this._searchTerm)
+      );
+      if (this._searchSubscription) this._searchSubscription.unsubscribe();
+      // Background network search
+      this._searchSubscription = this._coinsService.getMarket({
+        ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
+      });
+    }
+    // Cached search
     this.update();
   }
 
@@ -33,20 +54,28 @@ export class CryptoListComponent implements OnInit {
 
   constructor(
     private _favoriteStoreService: FavoriteStoreService,
-    coinsService: CoinsService
+    private _coinsService: CoinsService
   ) {
-    coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
+    _coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
       this._cachedMarket = data;
       if (!this._loaded) this._loaded = true;
+      if (this._searchSubscription) {
+        this._searchSubscription.unsubscribe();
+        delete this._searchSubscription;
+      }
       this.update();
     });
+    _coinsService.coins$.subscribe(
+      (coinsList: Readonly<ICoin[]>) => (this._cachedCoinList = coinsList)
+    );
     _favoriteStoreService.favoriteStore$.subscribe(
       (favorites: Readonly<Set<string>>) => (this._favorites = favorites)
     );
   }
 
   private update() {
-    if (this._searchTerm.length > 0) {
+    if (this._searchTerm) {
+      // Preload from cache
       this._filteredMarket = this._cachedMarket.filter((market: ICoinMarket) =>
         market.symbol.includes(this._searchTerm)
       );
@@ -67,5 +96,7 @@ export class CryptoListComponent implements OnInit {
     return market.id;
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    if (this._searchSubscription) this._searchSubscription.unsubscribe();
+  }
 }

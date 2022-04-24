@@ -1,14 +1,15 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { BehaviorSubject, debounceTime, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnDestroy {
   private _searchSubject$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
+  private _subscriptions: Subscription[] = [];
 
   @Output()
   search: EventEmitter<string> = new EventEmitter<string>();
@@ -17,15 +18,21 @@ export class SearchComponent implements OnInit {
     return this._searchSubject$.getValue();
   }
   set searchTerm(value: string) {
-    this._searchSubject$.next(value);
+    if (this._searchSubject$.getValue() !== value) {
+      this._searchSubject$.next(value);
+    }
   }
 
   constructor() {
-    this._searchSubject$
-      .asObservable()
-      .pipe(debounceTime(250))
-      .subscribe((searchTerm: string) => this.search.emit(searchTerm));
+    this._subscriptions.push(
+      this._searchSubject$
+        .asObservable()
+        .pipe(debounceTime(250))
+        .subscribe((searchTerm: string) => this.search.emit(searchTerm))
+    );
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    this._subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
+  }
 }

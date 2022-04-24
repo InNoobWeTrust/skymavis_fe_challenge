@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import {
   CoinsService,
@@ -12,7 +12,7 @@ import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
   templateUrl: './crypto-list.component.html',
   styleUrls: ['./crypto-list.component.scss'],
 })
-export class CryptoListComponent implements OnInit {
+export class CryptoListComponent implements OnDestroy {
   private _cachedCoinList: Readonly<ICoin[]> = [];
   private _cachedMarket: Readonly<ICoinMarket[]> = [];
   private _filteredMarket: Readonly<ICoinMarket[]> = [];
@@ -91,5 +91,7 @@ export class CryptoListComponent implements OnInit {
     return market.id;
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    if (this._searchSubscription) this._searchSubscription.unsubscribe();
+  }
 }

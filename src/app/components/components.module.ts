@@ -1,16 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCard, MatCardContent, MatCardModule } from '@angular/material/card';
-import { MatDivider, MatDividerModule } from '@angular/material/divider';
-import {
-  MatProgressSpinner,
-  MatProgressSpinnerModule,
-} from '@angular/material/progress-spinner';
-import {
-  MatProgressBar,
-  MatProgressBarModule,
-} from '@angular/material/progress-bar';
-import { MatList, MatListItem, MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 

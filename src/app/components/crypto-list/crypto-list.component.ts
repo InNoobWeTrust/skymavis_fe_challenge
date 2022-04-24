@@ -1,5 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CoinsService, ICoinMarket } from 'src/app/services/coins.service';
+import { Subscription } from 'rxjs';
+import {
+  CoinsService,
+  ICoin,
+  ICoinMarket,
+} from 'src/app/services/coins.service';
 import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
 
 @Component({
@@ -8,11 +13,13 @@ import { FavoriteStoreService } from 'src/app/services/favorite-store.service';
   styleUrls: ['./crypto-list.component.scss'],
 })
 export class CryptoListComponent implements OnInit {
+  private _cachedCoinList: Readonly<ICoin[]> = [];
   private _cachedMarket: Readonly<ICoinMarket[]> = [];
   private _filteredMarket: Readonly<ICoinMarket[]> = [];
   private _favorites: Readonly<Set<string>> = new Set();
   private _searchTerm: string = '';
   private _loaded = false;
+  private _searchSubscription?: Subscription;
 
   @Input()
   set searchTerm(value: string) {
@@ -33,13 +40,16 @@ export class CryptoListComponent implements OnInit {
 
   constructor(
     private _favoriteStoreService: FavoriteStoreService,
-    coinsService: CoinsService
+    private _coinsService: CoinsService
   ) {
-    coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
+    _coinsService.market$.subscribe((data: Readonly<ICoinMarket[]>) => {
       this._cachedMarket = data;
       if (!this._loaded) this._loaded = true;
       this.update();
     });
+    _coinsService.coins$.subscribe(
+      (coinsList: Readonly<ICoin[]>) => (this._cachedCoinList = coinsList)
+    );
     _favoriteStoreService.favoriteStore$.subscribe(
       (favorites: Readonly<Set<string>>) => (this._favorites = favorites)
     );
@@ -47,8 +57,22 @@ export class CryptoListComponent implements OnInit {
 
   private update() {
     if (this._searchTerm.length > 0) {
+      // Preload from cache
       this._filteredMarket = this._cachedMarket.filter((market: ICoinMarket) =>
         market.symbol.includes(this._searchTerm)
+      );
+      const wholeMarketMatch = this._cachedCoinList.filter((coin: ICoin) =>
+        coin.symbol.includes(this._searchTerm)
+      );
+      if (this._searchSubscription) this._searchSubscription.unsubscribe();
+      // Background network search
+      this._searchSubscription = this._coinsService.getMarket(
+        {
+          ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
+        },
+        (market: Readonly<ICoinMarket[]>) => {
+          this._filteredMarket = market;
+        }
       );
     } else {
       this._filteredMarket = this._cachedMarket;

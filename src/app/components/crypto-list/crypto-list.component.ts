@@ -24,7 +24,11 @@ export class CryptoListComponent implements OnInit {
     return this._loaded;
   }
   get marketData(): Readonly<ICoinMarket[]> {
-    return this._filteredMarket;
+    return [...this._filteredMarket].sort((a: ICoinMarket, b: ICoinMarket) => {
+      if (this.isFavorite(a)) return -1;
+      if (this.isFavorite(b)) return 1;
+      return 0;
+    });
   }
 
   constructor(

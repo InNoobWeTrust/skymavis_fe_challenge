@@ -26,6 +26,8 @@ export class CryptoListComponent implements OnDestroy {
     const toBeUpdated = value.trim();
     if (this._searchTerm !== toBeUpdated) {
       this._searchTerm = toBeUpdated;
+    }
+    if (this._searchTerm) {
       const wholeMarketMatch = this._cachedCoinList.filter((coin: ICoin) =>
         coin.symbol.includes(this._searchTerm)
       );

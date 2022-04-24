@@ -66,14 +66,9 @@ export class CryptoListComponent implements OnDestroy {
       );
       if (this._searchSubscription) this._searchSubscription.unsubscribe();
       // Background network search
-      this._searchSubscription = this._coinsService.getMarket(
-        {
-          ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
-        },
-        (market: Readonly<ICoinMarket[]>) => {
-          this._filteredMarket = market;
-        }
-      );
+      this._searchSubscription = this._coinsService.getMarket({
+        ids: wholeMarketMatch.map((coin: ICoin) => coin.id),
+      });
     } else {
       this._filteredMarket = this._cachedMarket;
     }

@@ -7,6 +7,7 @@ import {
   Subscription,
   take,
 } from 'rxjs';
+import { FavoriteStoreService } from './favorite-store.service';
 
 const COINS_API = 'https://api.coingecko.com/api/v3/coins/';
 const COINS_API_ROUTES = {
@@ -75,7 +76,6 @@ export class CoinsService {
     new BehaviorSubject<Readonly<ICoin[]>>([]);
   private _coinMarketSubject$: BehaviorSubject<Readonly<ICoinMarket[]>> =
     new BehaviorSubject<Readonly<ICoinMarket[]>>([]);
-  private _subscriptions: Subscription[] = [];
   private _marketRefreshSubscription?: Subscription;
 
   readonly coins$: Observable<Readonly<ICoin[]>> =
@@ -101,20 +101,20 @@ export class CoinsService {
       .subscribe((coins: Readonly<ICoin[]>) => this._coinsSubject$.next(coins));
   }
 
-  getMarket(
-    options: MarketQueryOptions = {},
-    callback?: (market: Readonly<ICoinMarket[]>) => void
-  ): Subscription {
+  getMarket(options: MarketQueryOptions = {}): Subscription {
     return this._http
       .get<Readonly<ICoinMarket[]>>(
         `${COINS_API}${COINS_API_ROUTES.markets(options)}`
       )
       .subscribe((markets: Readonly<ICoinMarket[]>) => {
-        if (callback) {
-          callback(markets);
-        } else {
-          this._coinMarketSubject$.next(markets);
-        }
+        // Incremental caching
+        const cached = this._coinMarketSubject$.getValue();
+        const cachedIds = cached.map((market: ICoinMarket) => market.id);
+        const toConcat = markets.filter(
+          (market: ICoinMarket) => !cachedIds.includes(market.id)
+        );
+        const concatenated = cached.concat(toConcat);
+        this._coinMarketSubject$.next(concatenated);
       });
   }
 }
